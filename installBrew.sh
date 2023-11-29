@@ -53,6 +53,7 @@ echo -e "${GR}External repositories have been tapped.${NC}"
 ####################
 
 formulae=(
+    aldente
     bun
     docker
     docker-compose
