@@ -120,7 +120,7 @@
 [push]
 
 	# Use the given remote-tracking branch as the upstream branch
-	autoSetupRemote = true/*
+	autoSetupRemote = true
 
 [pull]
 	rebase = true
