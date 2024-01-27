@@ -1,5 +1,65 @@
 #!/bin/bash
 
+####################
+# Global Variables #
+####################
+
+repos=(
+    oven-sh/bun
+)
+
+formulae=(
+    bun
+    gh
+    git
+    nvm
+    pnpm
+)
+
+casks=(
+    aldente
+    arc
+    discord
+    notion
+    raycast
+    slack
+    spotify
+    stremio
+    tableplus
+    the-unarchiver
+    visual-studio-code
+    warp
+    1password
+    1password-cli
+)
+
+prevRepos=$(brew tap)
+prevFormulae=$(brew list --formulae)
+prevCasks=$(brew list --cask)
+
+toInstallTaps=()
+for tap in "${repos[@]}"; do
+    if [[ ! $prevRepos =~ $tap ]]; then
+        toInstallTaps+=("$tap")
+    fi
+done
+
+toInstallFormulae=()
+for formula in "${formulae[@]}"; do
+    if [[ ! $prevFormulae =~ $formula ]]; then
+        toInstallFormulae+=("$formula")
+    fi
+done
+
+toInstallCasks=()
+for cask in "${casks[@]}"; do
+    if [[ ! $prevCasks =~ $cask ]]; then
+        toInstallCasks+=("$cask")
+    fi
+done
+
+alreadyInstalled=()
+
 ###############
 # Color Codes #
 ###############
@@ -13,10 +73,10 @@ NC='\033[0m'
 #####################
 if ! command -v xcode-select &> /dev/null
 then
-    echo -e "${BL}Xcode CLI is not installed. Installing Xcode CLI${NC}"
+    echo -e "${GR}Installing Xcode${NC}"
     xcode-select --install
 else 
-    echo -e "${GR}Xcode CLI is installed${NC}"
+    echo "Xcode CLI is installed"
 fi
 
 ####################
@@ -25,74 +85,44 @@ fi
 
 if ! command -v brew &> /dev/null
 then
-    echo -e "${BL}Homebrew is not installed. Installing Homebrew${NC}"
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontentcom/Homebrew/install/HEAD/installsh)"
+    echo -e "${GR}Installing Homebrew${NC}"
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 else 
-    echo -e "${GR}Updating Homebrew${NC}"
-    brew update &> /dev/null
+    echo "Homebrew installed, updating"
+    brew update -q
 fi
 
 ######################
 # Tap external repos #
 ######################
 
-repos=(
-    oven-sh/bun
-)
-
-for repo in "${repos[@]}"
-do
-    echo -e "${BL}Tapping $repo...${NC}"
-    brew tap "$repo" &> /dev/null
-done
-
-echo -e "${GR}External repositories have been tapped.${NC}"
+if ((${#toInstallTaps[@]} > 0)); then
+    echo -e "${GR}Tapping external repos${NC}"
+    brew tap "${toInstallTaps[@]}"
+fi
 
 ####################
 # Install formulae #
 ####################
 
-formulae=(
-    aldente
-    bun
-    docker
-    docker-compose
-    gh
-    git
-    nvm
-    python
-    unzip
-)
-
-for formula in "${formulae[@]}"
-do
-    echo -e "${BL}Installing $formula...${NC}"
-    brew install --formula "$formula" &> /dev/null
-done
-
-echo -e "${GR}Formulae have been installed${NC}"
+if ((${#toInstallFormulae[@]} > 0)); then
+    echo -e "${GR}Installing formulae${NC}"
+    brew install --formula "${toInstallFormulae[@]}"
+fi
 
 #################
 # Install casks #
 #################
 
-casks=(
-    arc
-    jetbrains-toolbox
-    figma
-    firefox-developer-edition
-    raycast
-    slack
-    spotify
-    visual-studio-code
-    warp
-    1password
-)
+if ((${#toInstallCasks[@]} > 0)); then
+    echo -e "${GR}Installing casks${NC}"
+    brew install --cask "${toInstallCasks[@]}"
+fi
 
-for cask in "${casks[@]}"
-do
-    echo -e "${BL}Installing $cask${NC}"
-    brew install --cask "$cask" &> /dev/null
-done
+###########################
+# Print already installed #
+###########################
 
-echo -e "${GR}Casks have been installed${NC}"
+if ((${#alreadyInstalled[@]} > 0)); then
+    printf "${GR}Already installed: ${NC}%s\n" "${alreadyInstalled[@]}"
+fi
