@@ -1,11 +1,16 @@
-# Source NVM
-source /opt/homebrew/opt/nvm/nvm.sh
+eval "$(/opt/homebrew/bin/brew shellenv)"
 
-# Path exports
-export DOTNET_ROOT="/opt/homebrew/opt/dotnet@6/libexec"
-export BUN_INSTALL="$HOME/.bun"
+# pnpm
+export PNPM_HOME="/Users/oliviergilquin/Library/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+alias pn="pnpm"
+# pnpm end
 
-# Consolidating PATH updates
-export PATH="/opt/homebrew/opt/dotnet@6/bin:$PATH"
-export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
-export PATH="$BUN_INSTALL/bin:$HOME/.dotnet/tools:$PATH"
+# nvm
+export NVM_DIR="$HOME/.nvm"
+  [ -s "$HOMEBREW_PREFIX/opt/nvm/nvm.sh" ] && \. "$HOMEBREW_PREFIX/opt/nvm/nvm.sh" # This loads nvm
+  [ -s "$HOMEBREW_PREFIX/opt/nvm/etc/bash_completion.d/nvm" ] && \. "$HOMEBREW_PREFIX/opt/nvm/etc/bash_completion.d/nvm" # This loads nvm bash_completion
+## nvm end
